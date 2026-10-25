@@ -61,7 +61,7 @@ cat > std-dirs <<'EOF'
 /usr/share/pixmaps
 /var
 EOF
-find %{buildroot} -mindepth 1 -printf '/%P\n' \
+find %{buildroot} -mindepth 1 -printf '/%%P\n' \
     | grep -Fvx -f std-dirs > %{name}.files
 
 %files -f %{_builddir}/euro-office-%{version}/%{name}.files
