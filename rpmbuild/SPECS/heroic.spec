@@ -1,9 +1,13 @@
 # heroic — repackaged from the official upstream binary rpm.
 # Update procedure: bump Version, update the sha256 comment, rebuild.
 
+# Prebuilt stripped binaries — nothing to debug-extract, and
+# find-debuginfo's gdb-add-index fails on Chromium's libvulkan.so.1.
+%global debug_package %{nil}
+
 Name:           heroic
 Version:        2.22.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Games launcher for GOG, Epic and Amazon Games
 
 License:        GPL-3.0-only AND MIT AND BSD-3-Clause
@@ -34,6 +38,10 @@ rpm2cpio %{SOURCE0} | cpio -idmu --quiet
 rm -rf %{buildroot}
 mkdir -p %{buildroot}
 cp -a . %{buildroot}
+
+# Don't let check-rpaths fail on the upstream binaries' vendor rpaths
+# (bitmask: standard | invalid | $ORIGIN-position | empty).
+export QA_RPATHS=$(( 0x0001 | 0x0002 | 0x0008 | 0x0010 ))
 
 # Regenerate the %files list from the extracted tree, skipping
 # directories owned by the "filesystem" package.
@@ -79,5 +87,8 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Sun Oct 25 2026 Noel Knubel - 2.22.4-2
+- Skip debuginfo (prebuilt stripped binaries), ignore vendor rpaths.
+
 * Sun Oct 25 2026 Noel Knubel - 2.22.4-1
 - Initial repack of the official upstream rpm for COPR.

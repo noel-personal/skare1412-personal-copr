@@ -50,6 +50,10 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}
 cp -a . %{buildroot}
 
+# Don't let check-rpaths fail on the upstream binaries' vendor rpaths
+# (bitmask: standard | invalid | $ORIGIN-position | empty).
+export QA_RPATHS=$(( 0x0001 | 0x0002 | 0x0008 | 0x0010 ))
+
 cat > std-dirs <<'EOF'
 /bin
 /etc

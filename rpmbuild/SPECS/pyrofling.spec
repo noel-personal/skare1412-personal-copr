@@ -12,7 +12,7 @@
 
 Name:           pyrofling
 Version:        20261025
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan capture/streaming tooling from Themaister (server, viewer, layers)
 
 License:        MIT
@@ -28,6 +28,16 @@ BuildRequires:  libX11-devel
 BuildRequires:  wayland-devel
 BuildRequires:  nasm
 # nasm: needed by the vendored FFmpeg build.
+# The vendored Granite bundles SDL3, which hard-fails at configure time
+# unless it finds a desktop video stack (Wayland/X11 + EGL + xkbcommon).
+BuildRequires:  libglvnd-devel
+BuildRequires:  mesa-libEGL-devel
+BuildRequires:  mesa-libGL-devel
+BuildRequires:  libxkbcommon-devel
+BuildRequires:  libXcursor-devel
+BuildRequires:  libXrandr-devel
+BuildRequires:  libXi-devel
+BuildRequires:  libXfixes-devel
 
 %description
 PyroFling captures Vulkan applications and streams video/audio with
@@ -54,5 +64,8 @@ latency-measurement-layer.
 # name), adjust this line after reading the build log.
 
 %changelog
+* Sun Oct 25 2026 Noel Knubel - 20261025-2
+- Add SDL3 desktop-video build requirements (vendored Granite bundles SDL3).
+
 * Sun Oct 25 2026 Noel Knubel - 20261025-1
 - Initial package from upstream snapshot.

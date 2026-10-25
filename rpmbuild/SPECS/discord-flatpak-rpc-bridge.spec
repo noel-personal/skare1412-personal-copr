@@ -2,12 +2,13 @@
 # The whole thing is two systemd user units (the service runs
 # systemd-socket-proxyd, part of systemd) plus the management script.
 # Upstream has no versioned releases; 1.0.0 is our choice. To update:
-# point Source0 at the newer commit hash, fix the %setup -n dir name,
-# bump Release.
+# point Source0 at the newer commit hash, note it in the comment there,
+# bump Release. (%prep strips the tarball's leading directory, so the
+# commit hash never appears in any path.)
 
 Name:           discord-flatpak-rpc-bridge
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Discord Rich Presence bridge for Flatpak apps (native Discord client)
 
 License:        GPL-2.0-only
@@ -25,7 +26,11 @@ show Rich Presence with your native Discord client. Socket-activated
 via systemd user units; enabled globally for all users at install.
 
 %prep
-%setup -q -n discord-flatpak-rpc-bridge-621eec8
+%setup -q -T -c -n %{name}-%{version}
+# GitHub commit tarballs extract into "<repo>-<FULL 40-char hash>/",
+# NOT the abbreviated hash — so never rely on the directory name;
+# strip the leading component instead.
+tar --strip-components=1 -xzf %{SOURCE0}
 
 %install
 install -Dpm 0644 discord-flatpak-rpc-bridge.service \
@@ -55,5 +60,8 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Sun Oct 25 2026 Noel Knubel - 1.0.0-2
+- Robust %prep: GitHub commit tarballs extract into full-hash dirs.
+
 * Sun Oct 25 2026 Noel Knubel - 1.0.0-1
 - Initial package from upstream commit 621eec8.

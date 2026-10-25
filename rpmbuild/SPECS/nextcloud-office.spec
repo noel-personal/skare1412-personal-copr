@@ -5,9 +5,13 @@
 # out, check the asset name on the releases page and update both.
 # Installs alongside euro-office without conflicts (separate dirs).
 
+# Upstream binaries are prebuilt/stripped: no debuginfo, and their
+# embedded vendor rpaths are fixed up via QA_RPATHS in %%install.
+%global debug_package %{nil}
+
 Name:           nextcloud-office-nextcloudoffice
 Version:        9.3.6
-Release:        0%{?dist}
+Release:        2%{?dist}
 Summary:        Nextcloud Office Desktop Editors (production build of the Euro-Office fork)
 
 License:        AGPL-3.0-only
@@ -36,6 +40,10 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}
 cp -a . %{buildroot}
 
+# Don't let check-rpaths fail on the upstream binaries' vendor rpaths
+# (bitmask: standard | invalid | $ORIGIN-position | empty).
+export QA_RPATHS=$(( 0x0001 | 0x0002 | 0x0008 | 0x0010 ))
+
 cat > std-dirs <<'EOF'
 /bin
 /etc
@@ -61,8 +69,11 @@ cat > std-dirs <<'EOF'
 /usr/share/pixmaps
 /var
 EOF
+# rpm splits %files manifest lines on whitespace, so a filename with a
+# space breaks the build. Escape spaces as "?" glob wildcards instead.
 find %{buildroot} -mindepth 1 -printf '/%%P\n' \
-    | grep -Fvx -f std-dirs > %{name}.files
+    | grep -Fvx -f std-dirs \
+    | sed 's/ /?/g' > %{name}.files
 
 %files -f %{_builddir}/%{name}-%{version}/%{name}.files
 %defattr(-,root,root,-)
@@ -78,5 +89,12 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Sun Oct 25 2026 Noel Knubel - 9.3.6-2
+- Escape spaces in upstream filenames ("05_green leaf.pptx" theme
+  source) as "?" globs in the generated %files list.
+
+* Sun Oct 25 2026 Noel Knubel - 9.3.6-1
+- Skip debuginfo (prebuilt stripped binaries), ignore vendor rpaths.
+
 * Sun Oct 25 2026 Noel Knubel - 9.3.6-0
 - Initial repack of the official upstream rpm for COPR.
