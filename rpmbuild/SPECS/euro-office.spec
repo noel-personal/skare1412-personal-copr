@@ -9,9 +9,17 @@
 # embedded vendor rpaths are fixed up via QA_RPATHS in %%install.
 %global debug_package %{nil}
 
+# Same as nextcloud-office: filter bundled Qt6 plus the unbundled
+# Oracle/Mimer/Postgres/MySQL/Firebird/ODBC client sonames out of
+# auto-generated Requires (the official rpm suppresses soname deps
+# entirely and hand-curates its list), and don't shadow Fedora's
+# real Qt6 packages with the /opt copies' Provides.
+%global __requires_exclude ^lib(Qt6.*|clntsh|mimerapi|pq|fbclient|mysqlclient|odbc)\\.so.*$
+%global __provides_exclude ^lib(Qt6.*|clntsh|mimerapi)\\.so.*$
+
 Name:           euro-office
 Version:        9.3.6
-Release:        2%{?dist}
+Release:        5%{?dist}
 Summary:        Euro-Office Desktop Editors (community build)
 
 License:        AGPL-3.0-only
@@ -24,6 +32,22 @@ BuildRequires:  cpio
 
 Requires:       fontconfig
 Requires:       hicolor-icon-theme
+# Explicit deps curated from the OFFICIAL upstream rpm's own Requires
+# list (it suppresses all auto soname deps; we keep ours but must
+# match its fonts — they matter for document rendering). Everything
+# else it lists (gtk3, atk, libX11, libxcb, xcb-util-*, libnotify,
+# libstdc++, libxkbcommon-x11) is already covered by our auto deps.
+Requires:       boost-filesystem
+Requires:       curl
+Requires:       dejavu-sans-fonts
+Requires:       dejavu-sans-mono-fonts
+Requires:       dejavu-serif-fonts
+Requires:       liberation-mono-fonts
+Requires:       liberation-narrow-fonts
+Requires:       liberation-sans-fonts
+Requires:       liberation-serif-fonts
+Requires:       libXScrnSaver
+Requires:       xdg-utils
 
 %description
 Euro-Office Desktop Editors: the AGPL European community fork of the
@@ -89,6 +113,26 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Sun Oct 25 2026 Noel Knubel - 9.3.6-5
+- Match the official rpm's curated runtime deps: require the
+  dejavu/liberation font packages (needed for document rendering;
+  they get autoremoved with the old package otherwise), xdg-utils,
+  curl, boost-filesystem and libXScrnSaver; also exclude the
+  sqldrivers Postgres/MySQL/Firebird/ODBC client sonames so the
+  install no longer drags in libpq, mysql8.0-libs and libfbclient2.
+
+* Sun Oct 25 2026 Noel Knubel - 9.3.6-4
+- Fix the dep-filter regex: Qt6 module libs are libQt6<Module>.so
+  (libQt6Core.so, libQt6Quick3D.so, ...), so the alternation needs
+  "Qt6.*" before ".so" — with plain "Qt6" only the Oracle/Mimer
+  entries were filtered and the unbundled libQt6Quick3D still
+  blocked the dnf transaction.
+
+* Sun Oct 25 2026 Noel Knubel - 9.3.6-3
+- Filter auto-generated Requires/Provides for the bundled Qt6 and
+  the unbundled Oracle/Mimer client sonames so dnf can resolve the
+  install transaction.
+
 * Sun Oct 25 2026 Noel Knubel - 9.3.6-2
 - Escape spaces in upstream filenames ("05_green leaf.pptx" theme
   source) as "?" globs in the generated %files list.
