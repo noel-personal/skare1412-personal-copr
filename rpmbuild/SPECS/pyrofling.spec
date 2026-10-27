@@ -18,8 +18,8 @@
 # video stack.
 
 Name:           pyrofling
-Version:        20261025
-Release:        3%{?dist}
+Version:        20261027
+Release:        4%{?dist}
 Summary:        Vulkan capture/streaming tooling from Themaister (server, viewer, layers)
 
 License:        MIT AND GPL-3.0-or-later
@@ -48,6 +48,13 @@ BuildRequires:  libXcursor-devel
 BuildRequires:  libXrandr-devel
 BuildRequires:  libXi-devel
 BuildRequires:  libXfixes-devel
+# Full SDL3 X11 dependency set (sdlchecks.cmake CheckX11 walks
+# X11/Xext/Xcursor/Xi/Xfixes/Xrandr/Xrender/Xss/Xtst and hard-fails
+# on the first missing one):
+BuildRequires:  libXext-devel
+BuildRequires:  libXrender-devel
+BuildRequires:  libXScrnSaver-devel
+BuildRequires:  libXtst-devel
 
 Requires:       vulkan-loader
 
@@ -77,7 +84,14 @@ Vulkan layers (capture, cross-WSI and latency-measurement).
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_pyrofling*.json
 
 %changelog
-* Mon Oct 27 2026 Noel Knubel - 20261025-3
+* Tue Oct 27 2026 Noel Knubel - 20261027-4
+- Add the rest of the SDL3 X11 dependency set: libXScrnSaver-devel
+  (the configure failure in copr), plus libXext-devel,
+  libXrender-devel and libXtst-devel that were only pulled in
+  transitively before.
+- Version 20261027 snapshot.
+
+* Sun Oct 25 2026 Noel Knubel - 20261025-3
 - Add the real configure requirements: ffmpeg-free-devel (Granite
   links system libavdevice/libavformat/libavcodec/libavutil via
   pkg-config), python3 (viewer font blob), pipewire-devel,

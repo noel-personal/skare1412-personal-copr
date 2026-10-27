@@ -40,3 +40,25 @@ officially supported by upstream developers.
 - `make-pyrofling-tarball.sh [YYYYMMDD]` — vendor a pyrofling
   snapshot with the Granite submodule tree (FFmpeg submodule
   skipped: on Linux Granite links system ffmpeg-free).
+- `build-and-submit.sh [chroot]...` — the full pipeline:
+  `spectool -g -R` on every spec, `rpmbuild -bs` per spec, then
+  `copr-cli build --nowait` per SRPM. One failing spec doesn't
+  abort the rest. Optional per-package chroots: put them (one per
+  line) in `scripts/<name>.chroots`; an empty file skips the
+  package. Without overrides, chroots come from the arguments or
+  the copr project defaults. `COPR_PROJECT` and `SPECS_DIR`
+  environment variables override the defaults
+  (`skare1412/personal`, `rpmbuild/SPECS`).
+
+  Run it from a cron job / systemd timer for fully unattended
+  updates, e.g. every Sunday night:
+
+  ```
+  30 2 * * 0  cd /path/to/skare1412-personal-copr && git pull --ff-only && copr-packaging/scripts/build-and-submit.sh
+  ```
+
+  Packages whose Source0 is a locally-made tarball (pyrofling,
+  autohdr-vk) are only rebuilt when you re-run their tarball script
+  and bump the spec Version — the pipeline itself is idempotent
+  and resubmitting an identical SRPM just produces a new build of
+  the same sources.
