@@ -1,35 +1,45 @@
-# pyrofling — built from a source snapshot that vendors the
-# Granite and FFmpeg git submodules (GitHub auto-tarballs don't
-# include submodules, so scripts/make-pyrofling-tarball.sh creates
-# Source0). Upstream has no version tags; the version is the snapshot
-# date. To update: re-run the script with a new date, update Version.
+# pyrofling — built from a source snapshot that vendors the Granite
+# submodule (scripts/make-pyrofling-tarball.sh creates Source0; the
+# ffmpeg submodule is NOT needed on Linux — Granite links system
+# FFmpeg through pkg-config). Upstream has no version tags; the
+# version is the snapshot date. To update: re-run the script with a
+# new date, update Version.
 #
-# EXPECT THE FIRST BUILD TO FAIL once or twice: if cmake configure or
-# the compiler complains about a missing package, add it to
-# BuildRequires and bump Release. The copr log names it exactly.
-# After the first successful build, verify the installed paths in the
-# log's "install" section against the %files list below.
+# Hard configure requirements (from Granite + pyrofling CMake):
+#   - pkg-config modules libavdevice/libavformat/libavcodec/libavutil
+#     (Granite/video/CMakeLists.txt: pkg_check_modules(LIBAV REQUIRED ...))
+#     -> ffmpeg-free-devel
+#   - Python3 (Granite blobify/bin_to_text for the viewer font blob)
+#   - libpipewire-0.3 is optional at configure time, but without it
+#     the server loses Pipewire capture support -> pipewire-devel
+#   - libpulse is optional (Granite audio backend) -> pulseaudio-libs-devel
+# The vendored SDL3 (via Granite) fails gracefully when X11/Wayland
+# pieces are missing, but with the BRs below it gets a full desktop
+# video stack.
 
 Name:           pyrofling
 Version:        20261025
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Vulkan capture/streaming tooling from Themaister (server, viewer, layers)
 
-License:        MIT
+License:        MIT AND GPL-3.0-or-later
+# MIT for PyroFling code; the binaries link Fedora's GPL FFmpeg
+# (ffmpeg-free), which applies GPL to the combined work.
 URL:            https://github.com/Themaister/pyrofling
 Source0:        pyrofling-%{version}.tar.xz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
+BuildRequires:  pkgconf-pkg-config
+BuildRequires:  python3
 BuildRequires:  vulkan-headers
+BuildRequires:  ffmpeg-free-devel
+BuildRequires:  pipewire-devel
+BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  libdrm-devel
 BuildRequires:  libX11-devel
 BuildRequires:  wayland-devel
-BuildRequires:  nasm
-# nasm: needed by the vendored FFmpeg build.
-# The vendored Granite bundles SDL3, which hard-fails at configure time
-# unless it finds a desktop video stack (Wayland/X11 + EGL + xkbcommon).
 BuildRequires:  libglvnd-devel
 BuildRequires:  mesa-libEGL-devel
 BuildRequires:  mesa-libGL-devel
@@ -39,11 +49,13 @@ BuildRequires:  libXrandr-devel
 BuildRequires:  libXi-devel
 BuildRequires:  libXfixes-devel
 
+Requires:       vulkan-loader
+
 %description
 PyroFling captures Vulkan applications and streams video/audio with
 low latency. This package builds the server (pyrofling), the client
-(pyrofling-viewer) and the Vulkan layers, including
-latency-measurement-layer.
+(pyrofling-viewer), the gamepad client, the latency tester, and the
+Vulkan layers (capture, cross-WSI and latency-measurement).
 
 %prep
 %setup -q
@@ -59,11 +71,21 @@ latency-measurement-layer.
 %license LICENSE
 %{_bindir}/pyrofling
 %{_bindir}/pyrofling-viewer
-%{_datadir}/vulkan/implicit_layer.d/*
-# If the layer turns out to be explicit (or installs under a different
-# name), adjust this line after reading the build log.
+%{_bindir}/pyrofling-gamepad
+%{_bindir}/pyrofling-latency-tester
+%{_libdir}/libVkLayer_pyrofling*.so
+%{_datadir}/vulkan/implicit_layer.d/VkLayer_pyrofling*.json
 
 %changelog
+* Mon Oct 27 2026 Noel Knubel - 20261025-3
+- Add the real configure requirements: ffmpeg-free-devel (Granite
+  links system libavdevice/libavformat/libavcodec/libavutil via
+  pkg-config), python3 (viewer font blob), pipewire-devel,
+  pulseaudio-libs-devel, pkgconf-pkg-config. Drop nasm (the ffmpeg
+  submodule is never built on Linux).
+- Complete the files list: layer .so files land in the libdir, and
+  pyrofling-gamepad / pyrofling-latency-tester are installed too.
+
 * Sun Oct 25 2026 Noel Knubel - 20261025-2
 - Add SDL3 desktop-video build requirements (vendored Granite bundles SDL3).
 
