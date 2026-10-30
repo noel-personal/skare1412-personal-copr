@@ -38,6 +38,12 @@ carry the 1.1 development snapshots; bazaar depends on it.
 %autosetup -n libdex-%{version} -p 1
 
 %build
+# Fedora 44's default CFLAGS add -mtls-dialect=gnu2, which is known
+# to break ucontext-based fiber libraries (RH bug 2263739): fibers
+# crash marshaling GClosure calls off their swapped stacks. The GNOME
+# runtime builds libdex without it (Flatpak builds work). Fall back to
+# the traditional TLS dialect so native builds match.
+export CFLAGS="${CFLAGS:-%{build_cflags}} -mtls-dialect=gnu"
 %meson -Dtests=false -Dexamples=false -Ddocs=false -Dgdbus=disabled -Dpygobject=false
 
 %meson_build
@@ -66,6 +72,11 @@ Development files for the libdex "Deferred Execution" library.
 %{_datadir}/gir-1.0/Dex-1.gir
 
 %changelog
+* Sun Nov 01 2026 Noel Knubel - 1.2.0-3
+- Build with -mtls-dialect=gnu: F44's default gnu2 TLS dialect breaks
+  libdex's ucontext fibers (crash in ffi_call on fiber stacks, RH bug
+  2263739); the GNOME runtime builds libdex without it.
+
 * Sun Nov 01 2026 Noel Knubel - 1.2.0-2
 - Disable the PyGObject override (-Dpygobject=false): it installed
   gi/overrides/Dex.py, which was not packaged and failed check-files.

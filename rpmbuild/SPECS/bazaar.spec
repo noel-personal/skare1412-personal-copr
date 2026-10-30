@@ -66,6 +66,11 @@ This package builds the official upstream source release with meson.
 %autosetup -n bazaar-v%{version} -p 1
 
 %build
+# Same fiber-safety fix as the libdex package: F44's default
+# -mtls-dialect=gnu2 breaks ucontext fibers (RH bug 2263739).
+# bazaar spawns dex fibers (cache_check_fiber etc.), so it needs the
+# traditional TLS dialect too.
+export CFLAGS="${CFLAGS:-%{build_cflags}} -mtls-dialect=gnu"
 %meson
 
 %meson_build
@@ -103,6 +108,10 @@ rm -f %{buildroot}%{_bindir}/bge-demo\
 # no scriptlets needed.
 
 %changelog
+* Sun Nov 01 2026 Noel Knubel - 0.9.10-5
+- Build with -mtls-dialect=gnu like libdex: F44's default gnu2 TLS
+  dialect crashes dex fibers (RH bug 2263739).
+
 * Sun Nov 01 2026 Noel Knubel - 0.9.10-4
 - Also remove the libbge.so dev symlink in %%install (last
   unpackaged-file failure; the runtime libbge.so.0* stays packaged).
