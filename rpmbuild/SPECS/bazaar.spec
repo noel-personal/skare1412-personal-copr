@@ -77,6 +77,7 @@ This package builds the official upstream source release with meson.
 # they are not part of the application package.
 rm -f %{buildroot}%{_bindir}/bge-demo\
        %{buildroot}%{_includedir}/bge/*.h\
+       %{buildroot}%{_libdir}/libbge.so\
        %{buildroot}%{_libdir}/pkgconfig/bge.pc
 
 %find_lang bazaar
@@ -102,6 +103,10 @@ rm -f %{buildroot}%{_bindir}/bge-demo\
 # no scriptlets needed.
 
 %changelog
+* Sun Nov 01 2026 Noel Knubel - 0.9.10-4
+- Also remove the libbge.so dev symlink in %%install (last
+  unpackaged-file failure; the runtime libbge.so.0* stays packaged).
+
 * Sun Nov 01 2026 Noel Knubel - 0.9.10-3
 - Add python3-babel and python3-gobject BuildRequires: the upstream
   countries.gvariant build step needs Babel and PyGObject at compile
