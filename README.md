@@ -15,6 +15,7 @@ officially supported by upstream developers.
 | nextcloud-office | [nextcloud-releases/Office-DesktopEditors](https://github.com/nextcloud-releases/Office-DesktopEditors) | repack of official upstream rpm | bump version |
 | bazaar | [World/bazaar](https://gitlab.gnome.org/World/bazaar) | upstream GitLab release tag tarball, built from source with meson | bump version, refresh sha256 comment |
 | firebot | [crowbartools/Firebot](https://github.com/crowbartools/Firebot) | repack of official upstream rpm | bump version, refresh sha256 comment |
+| libdex | [GNOME/libdex](https://gitlab.gnome.org/GNOME/libdex) | official GNOME release tarball, built from source with meson | bump version, refresh sha256 comment (companion for bazaar; F44 only ships 1.1~alpha) |
 | autohdr-vk | private | local tarball via `make-local-tarball.sh`, SRPM uploaded with copr-cli | re-run script, bump version |
 | pyrofling | [Themaister/pyrofling](https://github.com/Themaister/pyrofling) | local tarball via `make-pyrofling-tarball.sh` (snapshot, no upstream tags) | re-run script with new date, update Version |
 | volt-gui | [pythonlover02/volt-gui](https://github.com/pythonlover02/volt-gui) | repack of official release tarball (prebuilt, container-built) | bump version, refresh sha256 comment |
@@ -22,6 +23,9 @@ officially supported by upstream developers.
 
 ## Notes
 
+- bazaar needs `libdex >= 1.2.0`, which Fedora 44 does not ship; the
+  libdex companion package in this COPR fills that gap. Build libdex
+  before the first bazaar build.
 - Packages whose source cannot be fetched by copr (private repos,
   git submodules, local checkouts) are built as SRPMs locally and
   uploaded with `copr-cli build <project> <srpm>`.

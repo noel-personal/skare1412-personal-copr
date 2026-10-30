@@ -18,6 +18,8 @@ BuildRequires:  gcc
 BuildRequires:  vala
 BuildRequires:  pkgconfig(gtk4) >= 4.22.1
 BuildRequires:  pkgconfig(libadwaita-1) >= 1.8
+# libdex >= 1.2.0 is not in F44; provided by the libdex package in
+# this COPR (built from the official GNOME release tarball).
 BuildRequires:  pkgconfig(libdex-1) >= 1.2.0
 BuildRequires:  pkgconfig(flatpak) >= 1.9
 BuildRequires:  pkgconfig(appstream) >= 1.0
@@ -97,5 +99,8 @@ rm -f %{buildroot}%{_bindir}/bge-demo\
 # no scriptlets needed.
 
 %changelog
+* Sun Nov 01 2026 Noel Knubel - 0.9.10-2
+- Note the libdex >= 1.2.0 build requirement (COPR libdex package).
+
 * Sun Nov 01 2026 Noel Knubel - 0.9.10-1
 - Initial package for COPR, built from the upstream v0.9.10 release.

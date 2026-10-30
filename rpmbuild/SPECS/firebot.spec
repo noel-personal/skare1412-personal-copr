@@ -43,6 +43,18 @@ rpm2cpio %{SOURCE0} | cpio -idmu --quiet
 # for anything built from source anyway (debuginfo is disabled here).
 rm -rf ./usr/lib/.build-id
 
+# The main Electron binary is called "Firebot v5" (with a space). rpm
+# %files lists cannot reference it ("File must begin with /" breakage
+# from the space splitting the path), so rename it and fix the /usr/bin
+# wrapper symlink to point at the new name.
+mv "./usr/lib/%{appname}/Firebot v5" ./usr/lib/%{appname}/firebot
+ln -sfn ../lib/%{appname}/firebot ./usr/bin/%{appname}
+
+# Stray LICENSE file the upstream packager dropped in the applications
+# dir (likely a fzf entry in their electron-builder config); the
+# desktop-file whitelist of /usr/share/applications doesn't expect it.
+rm -f ./usr/share/applications/LICENSE
+
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}
