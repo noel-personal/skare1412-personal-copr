@@ -1,14 +1,15 @@
-# firebot (Firebot v5) — repackaged from the official upstream binary rpm.
+# firebotv5 (Firebot) — repackaged from the official upstream binary rpm.
 # Update procedure: bump Version, update the sha256 comment, rebuild.
 
 # Prebuilt stripped Electron binaries — nothing to debug-extract.
 %global debug_package %{nil}
 
-# Upstream's own binary package name (firebotv5), kept for the
-# desktop file / icons / libexec dir; we ship our own package name.
+# Upstream's binary package name is firebotv5 (dir under /usr/lib,
+# wrapper symlink, desktop file, icons); we ship the package under
+# the same name so dnf shows it like upstream does.
 %global appname firebotv5
 
-Name:           firebot
+Name:           firebotv5
 Version:        5.66.7
 Release:        1%{?dist}
 Summary:        Powerful all-in-one bot for Twitch streamers
@@ -108,5 +109,8 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Sun Nov 01 2026 Noel Knubel - 5.66.7-2
+- Rename package to firebotv5 to match upstream's own binary rpm.
+
 * Sun Nov 01 2026 Noel Knubel - 5.66.7-1
 - Initial repack of the official upstream rpm for COPR.
