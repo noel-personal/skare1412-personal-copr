@@ -21,7 +21,9 @@ BuildRequires:  pkgconfig(liburing) >= 0.7
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  vala
 # -Dtests=false -Dexamples=false -Ddocs=false keep the build lean; the
-# gdbus codegen extension is disabled (nothing in this COPR uses it).
+# gdbus codegen extension is disabled (nothing in this COPR uses it),
+# and so is the PyGObject override (-Dpygobject=false) — it would
+# otherwise install gi/overrides/Dex.py, which we don't package.
 
 %description
 Dex is a library supporting "Deferred Execution" with the explicit
@@ -36,7 +38,7 @@ carry the 1.1 development snapshots; bazaar depends on it.
 %autosetup -n libdex-%{version} -p 1
 
 %build
-%meson -Dtests=false -Dexamples=false -Ddocs=false -Dgdbus=disabled
+%meson -Dtests=false -Dexamples=false -Ddocs=false -Dgdbus=disabled -Dpygobject=false
 
 %meson_build
 
@@ -64,5 +66,9 @@ Development files for the libdex "Deferred Execution" library.
 %{_datadir}/gir-1.0/Dex-1.gir
 
 %changelog
+* Sun Nov 01 2026 Noel Knubel - 1.2.0-2
+- Disable the PyGObject override (-Dpygobject=false): it installed
+  gi/overrides/Dex.py, which was not packaged and failed check-files.
+
 * Sun Nov 01 2026 Noel Knubel - 1.2.0-1
 - Initial package for COPR (bazaar needs libdex >= 1.2.0).
