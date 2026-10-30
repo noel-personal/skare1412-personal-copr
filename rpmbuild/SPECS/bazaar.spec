@@ -43,6 +43,9 @@ BuildRequires:  libxml2
 BuildRequires:  gettext
 BuildRequires:  desktop-file-utils
 BuildRequires:  python3
+# scripts/countries.py (countries.gvariant build step) needs both:
+BuildRequires:  python3-babel
+BuildRequires:  python3-gobject
 
 # The .vapi files Vala needs ship inside the corresponding -devel
 # packages pulled in by the pkgconfig() BuildRequires above.
@@ -99,6 +102,11 @@ rm -f %{buildroot}%{_bindir}/bge-demo\
 # no scriptlets needed.
 
 %changelog
+* Sun Nov 01 2026 Noel Knubel - 0.9.10-3
+- Add python3-babel and python3-gobject BuildRequires: the upstream
+  countries.gvariant build step needs Babel and PyGObject at compile
+  time (was: 'Error: babel library not found').
+
 * Sun Nov 01 2026 Noel Knubel - 0.9.10-2
 - Note the libdex >= 1.2.0 build requirement (COPR libdex package).
 
