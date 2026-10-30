@@ -8,6 +8,7 @@ officially supported by upstream developers.
 
 | Package | Upstream | Source | Update procedure |
 | ------- | -------- | ------ | ---------------- |
+| afmf-linux | [serialexperimentslainnnn/afmf-linux](https://github.com/serialexperimentslainnnn/afmf-linux) | repack of official upstream rpm | bump version, refresh sha256 comment |
 | discord-flatpak-rpc-bridge | [Arcitec/discord-flatpak-rpc-bridge](https://github.com/Arcitec/discord-flatpak-rpc-bridge) | git snapshot tarball, built from source | bump snapshot |
 | euro-office | [Euro-Office/DesktopEditors](https://github.com/Euro-Office/DesktopEditors) | repack of official upstream rpm | bump version, refresh sha256 comment |
 | heroic | [HeroicGamesLauncher](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) | repack of official upstream rpm | bump version, refresh sha256 comment |
@@ -30,7 +31,7 @@ officially supported by upstream developers.
   `%{_datadir}/vulkan/implicit_layer.d`; the layers stay dormant
   unless their enable environment variable is set
   (`PYROFLING=1`, `VOLT_ENABLE` via the volt launcher,
-  `ENABLE_VKSUMI=1`).
+  `ENABLE_VKSUMI=1`, `AFMF_ENABLE=1`).
 
 ## copr-packaging/scripts
 
