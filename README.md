@@ -13,6 +13,8 @@ officially supported by upstream developers.
 | heroic | [HeroicGamesLauncher](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) | repack of official upstream rpm | bump version, refresh sha256 comment |
 | msttcore-fonts-installer | [isboston/msttcore-fonts](https://github.com/isboston/msttcore-fonts) | repack of official upstream noarch rpm | bump version |
 | nextcloud-office | [nextcloud-releases/Office-DesktopEditors](https://github.com/nextcloud-releases/Office-DesktopEditors) | repack of official upstream rpm | bump version |
+| bazaar | [World/bazaar](https://gitlab.gnome.org/World/bazaar) | upstream GitLab release tag tarball, built from source with meson | bump version, refresh sha256 comment |
+| firebot | [crowbartools/Firebot](https://github.com/crowbartools/Firebot) | repack of official upstream rpm | bump version, refresh sha256 comment |
 | autohdr-vk | private | local tarball via `make-local-tarball.sh`, SRPM uploaded with copr-cli | re-run script, bump version |
 | pyrofling | [Themaister/pyrofling](https://github.com/Themaister/pyrofling) | local tarball via `make-pyrofling-tarball.sh` (snapshot, no upstream tags) | re-run script with new date, update Version |
 | volt-gui | [pythonlover02/volt-gui](https://github.com/pythonlover02/volt-gui) | repack of official release tarball (prebuilt, container-built) | bump version, refresh sha256 comment |
